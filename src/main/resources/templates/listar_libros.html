@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html xmlns:th="https://www.thymeleaf.org">
+    <head>
+        <meta charset="utf8">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-
+              TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+        <link th:rel="stylesheet" th:href="@{/assets/izitoast/css/iziToast.css} "/>
+        <title>Libros</title>
+    </head>
+
+    <body id="cuerpo">
+
+
+
+        <nav th:replace="cargar_libros :: navLibro"></nav>
+
+        <div th:if="${libros}" style="position:absolute; top:10px; right:10px">
+            <a class="btn btn-primary" href="/AdministrarLibros/listarBaja" role="button" style="">Listar Baja</a>
+        </div>
+
+        <div th:if="${librosBaja}" style="position:absolute; top:10px; right:10px">
+            <a class="btn btn-primary" href="/AdministrarLibros/listar" role="button" style="">Listar Alta</a>
+        </div>
+
+        <div th:if="${error}" th:text="${error}"/>
+
+        <div>
+            <span th:unless="${librosBaja}">
+                <div>
+                    <span th:unless="${libros.empty}">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Id</th>
+                                    <th scope="col">Título</th>
+                                    <th scope="col">Isbn</th>
+                                    <th scope="col">Ejemplares</th>
+                                    <th scope="col">Ejemplares Prestados</th>
+                                    <th scope="col">Ejemplares Restantes</th>
+                                    <th scope="col">Alta</th>
+                                    <th scope="col">Dar Baja</th>                                    
+                                    <th scope="col">Autor</th>
+                                    <th scope="col">Editorial</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="libro : ${libros}">
+                                    <td><span th:text="${libro.id}">Id</span></td>
+                                    <td><span th:text="${libro.titulo}">Titulo</span></td>
+                                    <td><span th:text="${libro.isbn}">Isbn</span></td>
+                                    <td><span th:text="${libro.ejemplares}">Ejemplares</span></td>
+                                    <td><span th:text="${libro.ejemplaresPrestados}">Ejemplares Prestados</span></td>
+                                    <td><span th:text="${libro.ejemplaresRestantes}">Ejemplares Restantes</span></td>
+                                    <td><span th:text="${libro.alta}">Alta</span></td>
+                                    <td><form th:action="@{/AdministrarLibros/darBaja}" method="post">
+                                            <input type="hidden" name="id" th:value="${libro.id}"/>
+                                            <button class="btn btn-danger" type="submit">Button</button>
+                                        </form>
+                                    </td>                                   
+                                    <!--<td><button class="btn btn-primary" type="submit">Button</button></td>-->
+                                    <!--<td><a class="btn btn-primary" href="/AdministrarLibros/darBaja" role="button" name="id" th:value="${libro.id}">Dar Baja</a></td>-->
+                                    <!--<td><span th:text="${libro.baja}">Baja</span></td>-->
+                                    <td><span th:text="${libro.autor.nombre}">Autor</span></td>
+                                    <td><span th:text="${libro.editorial.nombre}">Editorial</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </span>
+                    <span th:if="${libros.empty}">
+                        no ai livro
+                    </span>
+                </div>
+            </span>                
+
+            <span th:if="${librosBaja}">
+
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Id</th>
+                            <th scope="col">Título</th>
+                            <th scope="col">Isbn</th>
+                            <th scope="col">Ejemplares</th>
+                            <th scope="col">Ejemplares Prestados</th>
+                            <th scope="col">Ejemplares Restantes</th>
+                            <th scope="col">Alta</th>
+                            <th scope="col">Dar Alta</th>
+                            <th scope="col">Baja</th>
+                            <th scope="col">Borrar</th>
+                            <th scope="col">Autor</th>
+                            <th scope="col">Editorial</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="libro : ${librosBaja}">
+                            <td><span th:text="${libro.id}">Id</span></td>
+                            <td><span th:text="${libro.titulo}">Titulo</span></td>
+                            <td><span th:text="${libro.isbn}">Isbn</span></td>
+                            <td><span th:text="${libro.ejemplares}">Ejemplares</span></td>
+                            <td><span th:text="${libro.ejemplaresPrestados}">Ejemplares Prestados</span></td>
+                            <td><span th:text="${libro.ejemplaresRestantes}">Ejemplares Restantes</span></td>
+                            <td><span th:text="${libro.alta}">Alta</span></td>
+                            <td>
+                                <form th:action="@{/AdministrarLibros/darAlta}" method="post">
+                                    <input type="hidden" name="id" th:value="${libro.id}"/>
+                                    <button class="btn btn-primary" type="submit">Button</button>
+                                </form>
+                            <td><span th:text="${libro.baja}">Baja</span></td>      
+
+                            <!--                            <td>
+                                                            <button class="btn btn-danger" th:attr="onclick=|confirmasion('${libro.id}')|">Borrar</button>
+                                                        </td> -->
+
+                            <td>
+                                <button class="btn btn-danger" th:attr="onclick=|borrar('${libro.id}','${libro.titulo}')|">Borrar</button>
+                            </td> 
+
+
+                            <!--                         <td>
+                                                            <button class="btn btn-danger" th:onclick="|confirmasion('${libro.id}')|">Borrar</button>
+                                                        </td> -->
+
+                            <!--                         <td>
+                                                            <button class="btn btn-danger" th:onclick="${'confirmasion(' + libro.id + ',' + libro.titulo + ');'}">Borrar</button>
+                                                        </td>  -->
+
+
+                            <!--<td><button class="btn btn-primary" type="submit">Button</button></td>-->
+                            <!--<td><a class="btn btn-primary" href="/AdministrarLibros/darBaja" role="button" name="id" th:value="${libro.id}">Dar Baja</a></td>-->
+                            <td><span th:text="${libro.autor.nombre}">Autor</span></td>
+                            <td><span th:text="${libro.editorial.nombre}">Editorial</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </span>                
+        </div>
+
+
+
+
+        <!--        <script type="text/javascript">  nunca supe porque puta no me funciono
+                    function confirmasion(id) {
+                    let text = "Seguro desea borrar el libro?\nAprete Aceptar o Cancelar.";
+                    if (confirm(text) == true) {
+                    $.post("/AdministrarLibros/borrar", {"id" : id});
+                    }
+                    }
+        
+                                function confirmasion(id,nombre) {
+                    let text = "Seguro desea borrar el libro '"+nombre+"' ?\nAprete Aceptar o Cancelar.";
+                    if (confirm(text) == true) {
+                    $.post("/AdministrarLibros/borrar", {"id" : id});
+                    }
+                    }
+                </script>-->
+
+                <!--no se como hacer que funcionen los $.method, ya que el texto emergente si sale con el nombre del libro y la id-->
+                <script>  
+                    function borrar(id,nombre) {
+                        let text = "Seguro desea borrar el libro "+nombre+"?\nAprete Aceptar o Cancelar."+id;
+                            if (confirm(text) == true) {
+                                $.post("/AdministrarLibros/borrar", id);
+                            } else {
+                                $.get("/")
+                            }
+                    }
+                </script>
+
+<!--        <script>  //no se como hacer que funcionen los $.method, probando cualquier cosa ya
+            function borrar(id,nombre) {
+            let text = "Seguro desea borrar el libro "+nombre+"?\nAprete Aceptar o Cancelar.";
+            if (confirm(text) == true) {
+            $.post("/AdministrarLibros/borrar", id, function () {
+            iziToast.show({
+            title: 'Success',
+            message: 'Provided email address is valid',
+            position: 'topRight',
+            timeout: 500000,
+            color: 'green'
+            });
+
+            }).fail(function () {
+            iziToast.show({
+            title: 'Fail',
+            message: 'This is not a valid email address',
+            position: 'topRight',
+            color: 'red'
+            });
+            });
+            } else {
+            $.get("/")
+            }
+            }
+        </script>-->
+
+
+
+
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" integrity="sha384-w1Q4orYjBQndcko6MimVbzY0tgp4pWB4lZ7lr30WKz0vr/aWKhXdBNmNb5D92v7s" crossorigin="anonymous"></script>
+    </body>
+</html>
