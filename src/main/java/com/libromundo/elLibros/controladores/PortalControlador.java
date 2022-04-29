@@ -5,13 +5,7 @@
  */
 package com.libromundo.elLibros.controladores;
 
-import com.libromundo.elLibros.errores.ErrorServicio;
-import com.libromundo.elLibros.servicios.AutorServicio;
-import com.libromundo.elLibros.servicios.EditorialServicio;
-import com.libromundo.elLibros.servicios.LibroServicio;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,14 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 @RequestMapping("/") //google.com/...
 public class PortalControlador {
-    
-    @Autowired
-    private AutorServicio autorServicio;
-    @Autowired
-    private EditorialServicio editorialServicio;
-    @Autowired
-    private LibroServicio libroServicio;
-    
+
     
     @GetMapping("/")
     public String index(){

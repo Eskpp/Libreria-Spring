@@ -81,14 +81,14 @@ public class LibroServicio {
 
         validar(titulo, isbn, anio, ejemplares, autorNombre, editorialNombre);
 
-        Autor autor = autorRepositorio.buscarPorNombre(autorNombre);
+        Autor autor = autorRepositorio.buscarPorNombre(autorNombre.trim());
         if (autor == null) {
-            autor = autorServicio.registrar(autorNombre);
+            autor = autorServicio.registrar(autorNombre.trim());
         }
 
-        Editorial editorial = editorialRepositorio.buscarPorNombre(editorialNombre);
+        Editorial editorial = editorialRepositorio.buscarPorNombre(editorialNombre.trim());
         if (editorial == null) {
-            editorial = editorialServicio.registrar(editorialNombre);
+            editorial = editorialServicio.registrar(editorialNombre.trim());
         }
 
         //considerar hacer un metodo aparte solo para modificar ejemplares totales Ó metodo que actualice prestamos
@@ -152,6 +152,7 @@ public class LibroServicio {
         return libroRepositorio.listarBaja();
     }
     
+    @Transactional
     public void borrar(String id) throws ErrorServicio{
         Optional<Libro> respuesta = libroRepositorio.findById(id);
         if (respuesta.isPresent()) {
@@ -160,6 +161,10 @@ public class LibroServicio {
         } else {
             throw new ErrorServicio("No se encontró un libro con ese id.");
         }
+    }
+    
+    public String trimNombre(String nombre){
+        return nombre.trim();
     }
 
     public void validar(String titulo, Long isbn, Integer anio, Integer ejemplares, String autor, String editorial) throws ErrorServicio {
@@ -182,10 +187,14 @@ public class LibroServicio {
 
         if (autor == null || autor.trim().isEmpty()) {
             throw new ErrorServicio("El autor no puede ser nulo.");
-        } //validar si existe o no un autor con ese nombre
+        } //validar si existe o no un autor con ese nombre <--- puedo hacer esto o lo que hice arriba.
 
         if (editorial == null || editorial.trim().isEmpty()) {
             throw new ErrorServicio("La editorial no puede ser nula.");
-        } //validar si existe o no un editoial. con ese nombre
+        } //validar si existe o no un editoial. con ese nombre <--- puedo hacer esto o lo que hice arriba.
+        
+        if (libroRepositorio.buscarPorIsbn(isbn) != null) {
+            throw new ErrorServicio("Ya existe un libro con ese ISBN");
+        }
     }
 }

@@ -11,32 +11,95 @@
 
         <nav th:replace="cargar_autores :: navAutor"></nav>
 
-        <div>
-            <span th:if="${autores.empty}">
-                no ai autor
-            </span>
-            <span th:unless="${autores.empty}">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th scope="col">Id</th>
-                            <th scope="col">Nombre</th>
-                            <th scope="col">Alta</th>
-                            <th scope="col">Baja</th>   
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="autor: ${autores}">
-                            <td><span th:text="${autor.id}">Id</span></td>
-                            <td><span th:text="${autor.nombre}">Nombre</span></td>
-                            <td><span th:text="${autor.alta}">Alta</span></td>
-                            <td><span th:text="${autor.baja}">Baja</span></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </span>
+        <div th:if="${error}" th:text="${error}"/>
+
+        <div th:if="${autores}" style="position:absolute; top:10px; right:10px">
+            <a class="btn btn-primary" href="/AdministrarAutores/listarBaja" role="button" style="">Listar Baja</a>
         </div>
 
+        <div th:if="${autoresBaja}" style="position:absolute; top:10px; right:10px">
+            <a class="btn btn-primary" href="/AdministrarAutores/listar" role="button" style="">Listar Alta</a>
+        </div>
+
+        <div>
+            <div th:unless="${autoresBaja}">
+                <span th:if="${autores.empty}">
+                    no ai autor
+                </span>
+                <span th:unless="${autores.empty}">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th scope="col">Id</th>
+                                <th scope="col">Nombre</th>
+                                <th scope="col">Alta</th>
+                                <th scope="col">Dar baja</th>   
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="autor: ${autores}">
+                                <td><span th:text="${autor.id}">Id</span></td>
+                                <td><span th:text="${autor.nombre}">Nombre</span></td>
+                                <td><span th:text="${autor.alta}">Alta</span></td>
+                                <td><form th:action="@{/AdministrarAutores/darBaja}" method="post">
+                                        <input type="hidden" name="id" th:value="${autor.id}"/>
+                                        <button class="btn btn-danger" type="submit">Button</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </span>
+            </div>
+            <div th:if="${autoresBaja}">
+                <span th:if="${autoresBaja.empty}">
+                    no ai autor chikito
+                </span>
+                <span th:unless="${autoresBaja.empty}">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th scope="col">Id</th>
+                                <th scope="col">Nombre</th>
+                                <th scope="col">Alta</th>
+                                <th scope="col">Dar alta</th>
+                                <th scope="col">Baja</th>   
+                                <th scope="col">Borrar</th>   
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="autor: ${autoresBaja}">
+                                <td><span th:text="${autor.id}">Id</span></td>
+                                <td><span th:text="${autor.nombre}">Nombre</span></td>
+                                <td><span th:text="${autor.alta}">Alta</span></td>
+                                <td><form th:action="@{/AdministrarAutores/darAlta}" method="post">
+                                        <input type="hidden" name="id" th:value="${autor.id}"/>
+                                        <button class="btn btn-primary" type="submit">Button</button>
+                                    </form>
+                                </td>
+                                <td><span th:text="${autor.baja}">Baja</span></td>
+                                <td>
+                                    <button class="btn btn-danger" th:attr="onclick=|borrar('${autor.id}','${autor.nombre}')|">Borrar</button>
+                                </td> 
+                            </tr>
+                        </tbody>
+                    </table>
+                </span>
+            </div>
+
+        </div>
+
+
+        <script>  
+            function borrar(id,nombre) {
+            let text = "Seguro desea borrar el libro "+nombre+"?\nAprete Aceptar o Cancelar."+id;
+            if (confirm(text) == true) {
+            $.post("/AdministrarAutores/borrar", id);
+            } else {
+            $.get("/")
+            }
+            }
+        </script>
 
         <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>

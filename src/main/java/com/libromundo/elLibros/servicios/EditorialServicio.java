@@ -32,7 +32,7 @@ public class EditorialServicio {
         validar(nombre);
 
         Editorial editorial = new Editorial();
-        editorial.setNombre(nombre);
+        editorial.setNombre(nombre.trim());
         editorial.setAlta(new Date());
 
         return editorialRepositorio.save(editorial);
@@ -85,7 +85,13 @@ public class EditorialServicio {
         return editorialRepositorio.listar();
     }
     
-    public void eliminar(String id) throws ErrorServicio{
+    @Transactional(readOnly = true)
+    public List<Editorial> listarBaja() {
+        return editorialRepositorio.listarBaja();
+    }
+    
+    @Transactional
+    public void borrar(String id) throws ErrorServicio{
         Optional<Editorial> respuesta = editorialRepositorio.findById(id);
         if (respuesta.isPresent()) {
             Editorial editorial = respuesta.get();
@@ -98,6 +104,9 @@ public class EditorialServicio {
     public void validar(String nombre) throws ErrorServicio {
         if (nombre == null || nombre.trim().isEmpty()) {
             throw new ErrorServicio("El nombre del autor no puede ser nulo.");
+        }
+        if (editorialRepositorio.buscarPorNombre(nombre.trim()) != null) {
+            throw new ErrorServicio("Ya hay una editorial con ese nombre.");
         }
     }
 

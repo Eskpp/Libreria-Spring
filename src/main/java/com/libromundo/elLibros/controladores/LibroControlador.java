@@ -9,6 +9,8 @@ import com.libromundo.elLibros.entidades.Libro;
 import com.libromundo.elLibros.errores.ErrorServicio;
 import com.libromundo.elLibros.servicios.LibroServicio;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 
 /**
  *
@@ -32,12 +35,12 @@ public class LibroControlador {
     public String cargar() {
         return "cargar_libros.html";
     }
-    
+
     @PostMapping("/registrar") // no deberia ser Post en vez de get?= no me deja poner post
-        public String registrar(ModelMap modelo, @RequestParam String titulo, @RequestParam(required = false) Long isbn, @RequestParam(required = false) Integer anio, @RequestParam(required = false) Integer ejemplares, @RequestParam String autor, @RequestParam String editorial){
-            try { //error de que los valores numericos no me deja pasarlos en null, nunca llegan al validar
-                
-                libroServicio.registrar(titulo, isbn, anio, ejemplares, autor, editorial);
+    public String registrar(ModelMap modelo, @RequestParam String titulo, @RequestParam(required = false) Long isbn, @RequestParam(required = false) Integer anio, @RequestParam(required = false) Integer ejemplares, @RequestParam String autor, @RequestParam String editorial) {
+        try { //error de que los valores numericos no me deja pasarlos en null, nunca llegan al validar
+
+            libroServicio.registrar(titulo, isbn, anio, ejemplares, autor, editorial);
         } catch (ErrorServicio ex) {
             modelo.put("error", ex.getMessage());
             modelo.put("titulo", titulo);
@@ -50,9 +53,9 @@ public class LibroControlador {
         }
         return "index.html";
     }
-    
+
     @PostMapping("/darBaja")
-    public String darBaja(ModelMap modelo, @RequestParam String id){
+    public String darBaja(ModelMap modelo, @RequestParam String id) {
         try {
             libroServicio.darBaja(id); //antes de saber de redirect:, se podia hacer asi pero quedaba el path antiguo (el de darBaja)
 //            List<Libro> libros = libroServicio.listar();
@@ -63,29 +66,32 @@ public class LibroControlador {
         }
         return "redirect:/AdministrarLibros/listar";
     }
-    
+
     @PostMapping("/darAlta")
-    public String darAlta(ModelMap modelo, @RequestParam String id){
+    public String darAlta(ModelMap modelo, @RequestParam String id) {
         try {
             libroServicio.darAlta(id); //idem darBaja
 //            List<Libro> libros = libroServicio.listarBaja();
 //            modelo.addAttribute("librosBaja", libros);
         } catch (ErrorServicio ex) {
             modelo.addAttribute("error", ex.getMessage());
-            return "redirect:/AdministrarLibros/listarBaja";
         }
         return "redirect:/AdministrarLibros/listarBaja";
     }
-    
-    @GetMapping("/borrar")
-    public String borrar(ModelMap modelo, @RequestParam String id){
+
+    @PostMapping("/borrar")
+    public String borrar(ModelMap modelo, @RequestParam String id) {
         try {
             libroServicio.borrar(id);
+            this.wait(200);
+            return "redirect:/AdministrarLibros/listarBaja";
         } catch (ErrorServicio ex) {
             modelo.addAttribute("error", ex.getMessage());
             return "redirect:/AdministrarLibros/listarBaja";
-        } 
-        return "redirect:/AdministrarLibros/listarBaja";
+//        } catch (InterruptedException ex) {
+//            modelo.addAttribute("error", "error en el wait");
+//            return "redirect:/AdministrarLibros/listarBaja";
+        }
     }
 
     @GetMapping("/listar")
@@ -94,7 +100,7 @@ public class LibroControlador {
         modelo.addAttribute("libros", libros);
         return "listar_libros";
     }
-    
+
     @GetMapping("/listarBaja")
     public String listarBaja(ModelMap modelo) {
         List<Libro> libros = libroServicio.listarBaja();

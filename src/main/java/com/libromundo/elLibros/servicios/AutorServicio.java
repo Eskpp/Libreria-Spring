@@ -32,7 +32,7 @@ public class AutorServicio {
         validar(nombre);
 
         Autor autor = new Autor();
-        autor.setNombre(nombre);
+        autor.setNombre(nombre.trim());
         autor.setAlta(new Date());
         
         return autorRepositorio.save(autor);
@@ -86,7 +86,13 @@ public class AutorServicio {
         return autorRepositorio.listar();
     }
     
-    public void eliminar(String id) throws ErrorServicio{
+    @Transactional(readOnly = true)
+    public List<Autor> listarBaja(){
+        return autorRepositorio.listarBaja();
+    }
+    
+    @Transactional
+    public void borrar(String id) throws ErrorServicio{
         Optional<Autor> respuesta = autorRepositorio.findById(id);
         if (respuesta.isPresent()) {
             Autor autor = respuesta.get();
@@ -99,6 +105,10 @@ public class AutorServicio {
     public void validar(String nombre) throws ErrorServicio {
         if (nombre == null || nombre.trim().isEmpty()) {
             throw new ErrorServicio("El nombre del autor no puede ser nulo.");
+        }
+        
+        if (autorRepositorio.buscarPorNombre(nombre.trim()) != null) {
+            throw new ErrorServicio("Ya existe un autor con ese nombre.");
         }
     }
 

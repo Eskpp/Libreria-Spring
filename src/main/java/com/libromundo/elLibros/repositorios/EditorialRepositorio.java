@@ -27,4 +27,7 @@ public interface EditorialRepositorio extends JpaRepository<Editorial, String>{
     @Query("SELECT e FROM Editorial e WHERE e.baja IS NULL")
     public List<Editorial> listar();
     
+    @Query("SELECT e FROM Editorial e WHERE e.baja IS NOT NULL")
+    public List<Editorial> listarBaja();
+    
 }

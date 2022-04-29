@@ -11,33 +11,101 @@
 
         <nav th:replace="cargar_editoriales :: navEditorial"></nav>
 
-        <div>
-            <span th:if="${editoriales.empty}">
-                no ai editorial
-            </span>
-            <span th:unless="${editoriales.empty}">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th scope="col">Id</th>
-                            <th scope="col">Nombre</th>
-                            <th scope="col">Alta</th>
-                            <th scope="col">Baja</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="editorial: ${editoriales}">
-                            <td><span th:text="${editorial.id}">Id</span></td>
-                            <td><span th:text="${editorial.nombre}">Nombre</span></td>
-                            <td><span th:text="${editorial.alta}">Alta</span></td>
-                            <td><span th:text="${editorial.baja}">Baja</span></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </span>
+        <div th:if="${error}" th:text="${error}"/>
+
+        <div th:if="${editoriales}" style="position:absolute; top:10px; right:10px">
+            <a class="btn btn-primary" href="/AdministrarEditoriales/listarBaja" role="button" style="">Listar Baja</a>
         </div>
 
+        <div th:if="${editorialesBaja}" style="position:absolute; top:10px; right:10px">
+            <a class="btn btn-primary" href="/AdministrarEditoriales/listar" role="button" style="">Listar Alta</a>
+        </div>
 
+        <div>
+            <span th:unless="${editorialesBaja}">
+                <div>
+                    <span th:unless="${editoriales.empty}">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Id</th>
+                                    <th scope="col">Nombre</th>
+                                    <th scope="col">Alta</th>
+                                    <th scope="col">Dar baja</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="editorial: ${editoriales}">
+                                    <td><span th:text="${editorial.id}">Id</span></td>
+                                    <td><span th:text="${editorial.nombre}">Nombre</span></td>
+                                    <td><span th:text="${editorial.alta}">Alta</span></td>
+                                    <td><form th:action="@{/AdministrarEditoriales/darBaja}" method="post">
+                                            <input type="hidden" name="id" th:value="${editorial.id}"/>
+                                            <button class="btn btn-danger" type="submit">Button</button>
+                                        </form>
+                                    </td> 
+                                    <!--<td><span th:text="${editorial.baja}">Baja</span></td>-->
+                                </tr>
+                            </tbody>
+                        </table>
+                    </span>
+                    <span th:if="${editoriales.empty}">
+                        no ai editorial
+                    </span>
+                </div>
+            </span>
+
+            <span th:if="${editorialesBaja}">
+                <div>
+                    <span th:unless="${editorialesBaja.empty}">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Id</th>
+                                    <th scope="col">Nombre</th>
+                                    <th scope="col">Alta</th>
+                                    <th scope="col">Dar alta</th>
+                                    <th scope="col">Baja</th>
+                                    <th scope="col">Borrar</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="editorial: ${editorialesBaja}">
+                                    <td><span th:text="${editorial.id}">Id</span></td>
+                                    <td><span th:text="${editorial.nombre}">Nombre</span></td>
+                                    <td><span th:text="${editorial.alta}">Alta</span></td>
+                                    <td>
+                                        <form th:action="@{/AdministrarEditoriales/darAlta}" method="post">
+                                            <input type="hidden" name="id" th:value="${editorial.id}"/>
+                                            <button class="btn btn-primary" type="submit">Button</button>
+                                        </form>
+                                    </td>
+                                    <td><span th:text="${editorial.baja}">Baja</span></td>
+                                    <td>
+                                        <button class="btn btn-danger" th:attr="onclick=|borrar('${editorial.id}','${editorial.nombre}')|">Borrar</button>
+                                    </td> 
+                                </tr>
+                            </tbody>
+                        </table>
+                    </span>
+                    <span th:if="${editorialesBaja.empty}">
+                        no ai edito
+                    </span>
+                </div>
+            </span>
+
+        </div>
+
+        <script>  
+            function borrar(id,nombre) {
+            let text = "Seguro desea borrar el libro "+nombre+"?\nAprete Aceptar o Cancelar."+id;
+            if (confirm(text) == true) {
+            $.post("/AdministrarEditoriales/borrar", id);
+            } else {
+            $.get("/")
+            }
+            }
+        </script>
 
 
 

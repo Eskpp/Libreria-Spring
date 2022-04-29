@@ -27,5 +27,8 @@ public interface AutorRepositorio extends JpaRepository<Autor, String>{
     
     @Query("SELECT a FROM Autor a WHERE a.baja IS NULL")
     public List<Autor> listar();
+    
+    @Query("SELECT a FROM Autor a WHERE a.baja IS NOT NULL")
+    public List<Autor> listarBaja();
      
 }
